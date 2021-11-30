@@ -1,0 +1,9 @@
+{
+  "name": "gamegraph",
+  "version": "0.1.0",
+  "description": "GraphQL web data persistence and pub/sub framework.",
+  "main": "index.js",
+  "author": "janderbot",
+  "license": "MIT",
+  "private": true
+}
