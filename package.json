@@ -2,7 +2,7 @@
   "name": "gamegraph",
   "version": "0.1.0",
   "description": "GraphQL web data persistence and realtime pub/sub framework.",
-  "main": "index.js",
+  "main": "src/index.ts",
   "author": "janderbot",
   "license": "MIT",
   "private": true,
