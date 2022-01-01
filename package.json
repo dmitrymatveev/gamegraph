@@ -1,9 +1,25 @@
 {
   "name": "gamegraph",
   "version": "0.1.0",
-  "description": "GraphQL web data persistence and pub/sub framework.",
+  "description": "GraphQL web data persistence and realtime pub/sub framework.",
   "main": "index.js",
   "author": "janderbot",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "start": "tsc && node build/index.js",
+    "dev": "tsnd --respawn src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "ts-node-dev": "^1.1.8",
+    "tslint": "^6.1.3",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^16.2.0"
+  }
 }
