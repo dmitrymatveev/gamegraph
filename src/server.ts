@@ -2,7 +2,7 @@ import express from 'express';
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
 
-const port = 8080;
+const PORT = process.env.PORT || 8080;
 
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -19,13 +19,16 @@ var root = {
 };
 
 export const start = () => {
-    var app = express();
-    app.use('/', graphqlHTTP({
+  var app = express();
+  app.use(
+    '/',
+    graphqlHTTP({
       schema: schema,
       rootValue: root,
       graphiql: true,
-    }));
-    app.listen(port);
-    console.log(`Running a GraphQL API server at http://localhost:${port}`);
-    return app;
-}
+    })
+  );
+  app.listen(PORT);
+  console.log(`Running a GraphQL API server at http://localhost:${PORT}`);
+  return app;
+};
