@@ -1,26 +1,37 @@
-# Using pushpin proxy server
-FROM fanout/pushpin:1.34.0
+# = = = = = = = = = = = = = = = = =
+# Build application from source
+# = = = = = = = = = = = = = = = = =
+FROM node:17-alpine as builder
 
-# Create app directory
+# Copy relevant source files
 WORKDIR /usr/src/gamegraph
-
-# Install Node.js
-RUN apt-get update
-RUN apt-get install curl
-RUN curl -fsSL https://deb.nodesource.com/setup_17.x | bash -
-RUN apt-get install -y nodejs
-
-# Build gamegraph from source
-COPY src/ ./src
+COPY src/ ./src 
 COPY package*.json ./
 COPY tsconfig.json ./
 
-RUN npm install -D
-RUN npm run build
+# Run build process
+RUN npm install && \
+    npm run build
 
-# Define default entrypoint and command
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["pushpin", "--merge-output", ";", "npm", "run"]
+# = = = = = = = = = = = = = = = = =
+# Only install production packages
+# = = = = = = = = = = = = = = = = =
+FROM node:17-alpine as cleaner
 
-# Run gamegraph application
-# CMD [ "node", "build/index.js" ]
+# Take build artifacts
+WORKDIR /usr/src/gamegraph
+COPY --from=builder /usr/src/gamegraph/package*.json ./
+COPY --from=builder /usr/src/gamegraph/build ./
+
+# Install production dependencies only
+RUN npm install --only=production
+
+# = = = = = = = = = = = = = = = = =
+# Run application inside pushpin proxy
+# = = = = = = = = = = = = = = = = =
+FROM fanout/pushpin:1.34.0
+WORKDIR /usr/src/gamegraph
+COPY --from=cleaner /usr/src/gamegraph ./
+CMD pushpin --merge-output
+
+EXPOSE 8080
