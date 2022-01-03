@@ -15,9 +15,9 @@ RUN npm install && \
     npm run build && \
     npm run package:linux-x64
 
-# = = = = = = = = = = = = = = = = =
+# = = = = = = = = = = = = = = = = = =
 # Run application inside pushpin proxy
-# = = = = = = = = = = = = = = = = =
+# = = = = = = = = = = = = = = = = = =
 FROM fanout/pushpin:1.34.0
 COPY --from=builder /usr/src/gamegraph/gamegraph /usr/bin/gamegraph
 COPY --from=builder /usr/src/gamegraph/routes /etc/pushpin/routes
