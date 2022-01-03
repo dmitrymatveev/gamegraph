@@ -8,6 +8,7 @@ WORKDIR /usr/src/gamegraph
 COPY src/ ./src 
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY routes ./routes
 
 # Build and package
 RUN npm install && \
@@ -19,6 +20,5 @@ RUN npm install && \
 # = = = = = = = = = = = = = = = = =
 FROM fanout/pushpin:1.34.0
 COPY --from=builder /usr/src/gamegraph/gamegraph /usr/bin/gamegraph
+COPY --from=builder /usr/src/gamegraph/routes /etc/pushpin/routes
 CMD pushpin --merge-output & gamegraph
-
-EXPOSE 8080
