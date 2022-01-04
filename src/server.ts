@@ -9,6 +9,12 @@ import {
   shouldRenderGraphiQL,  
 } from 'graphql-helix';
 
+// TODO: add GRIP handling https://github.com/fanout/js-serve-grip, replace sendResult function
+// TODO: add datalayer caching https://github.com/graphql/dataloader
+// TODO: use graphQl modules https://www.graphql-modules.com/ type-safety, cqrs, testability
+// TODO: add permissions to graph https://github.com/maticzav/graphql-shield
+// TODO: investigate graphQl integration QA https://graphql-inspector.com/
+
 const PORT = process.env.PORT || 8080;
 
 // Construct a schema, using GraphQL schema language
