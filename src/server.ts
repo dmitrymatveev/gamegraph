@@ -1,8 +1,13 @@
-import express from 'express';
-import { createServer } from 'http'
-import { graphqlHTTP } from 'express-graphql'
+import express, { RequestHandler } from "express";
 import { buildSchema, execute, subscribe } from 'graphql'
 import { makeExecutableSchema } from '@graphql-tools/schema'
+import { 
+  getGraphQLParameters,
+  processRequest,
+  renderGraphiQL,
+  sendResult,
+  shouldRenderGraphiQL,  
+} from 'graphql-helix';
 
 const PORT = process.env.PORT || 8080;
 
@@ -25,10 +30,13 @@ const resolvers = {
     },
   },
   Subscription: {
-    greetings: async function * greeter() {
-      console.log('PROCESS SUBSCRIPTION')
-      for (const hi of ['Hi', 'Bonjour', 'Hola', 'Ciao', 'Zdravo']) {
-        yield { greetings: hi }
+    greetings: {
+      subscribe: async function * greeter() {
+        console.log('PROCESS SUBSCRIPTION')
+        for (const hi of ['Hi', 'Bonjour', 'Hola', 'Ciao', 'Zdravo', 'Privet']) {
+          yield { greetings: hi }
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
     }
   }
@@ -37,23 +45,43 @@ const resolvers = {
 const executableSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
-})
-
-// const schema = makeExecutableSchema({
-//   typeDefs: typeDefs,
-//   resolvers: resolvers,
-// });
+});
 
 export const start = () => {
-  var app = express();
-  app.use(
-    '/',
-    graphqlHTTP({
-      schema: executableSchema,
-      graphiql: true,
-    })
-  );
-  app.listen(PORT);
-  console.log(`Running a GraphQL API server at http://localhost:${PORT}`);
+  const app = express();
+  
+  app.use(express.json());
+
+  app.use("/", async (req, res) => {
+
+    const request = {
+      body: req.body,
+      headers: req.headers,
+      method: req.method,
+      query: req.query,
+    };
+    
+    if (shouldRenderGraphiQL(request)) {
+      res.send(renderGraphiQL());
+    }
+    else {
+      const { operationName, query, variables } = getGraphQLParameters(request);
+  
+      const result = await processRequest({
+        operationName,
+        query,
+        variables,
+        request,
+        schema: executableSchema,
+        // contextFactory: () => ({
+        //   // session: req.session,
+        // }),
+      });
+      
+      sendResult(result, res);
+    }
+  });
+
+  app.listen(PORT, () => console.log(`Running a GraphQL API server at http://localhost:${PORT}`));
   return app;
 };
