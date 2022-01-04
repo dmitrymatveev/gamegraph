@@ -12,7 +12,7 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker:build": "docker build . -t gamegraph",
-    "docker:latest": "docker run -p 7999:7999 -p 8080:8080 -p 5560-5563:5560-5563 -d gamegraph:latest",
+    "docker:latest": "docker run -p 7999:7999 -p 5560-5563:5560-5563 -d gamegraph:latest",
     "package:linux-x64": "pkg build/index.js -o gamegraph -t node14-linux-x64"
   },
   "devDependencies": {
@@ -23,9 +23,9 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^8.3.1",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
-    "graphql": "^16.2.0",
-    "graphql-tools": "^8.2.0"
+    "graphql": "^16.2.0"
   }
 }

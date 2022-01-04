@@ -1,6 +1,8 @@
 import express from 'express';
-var { graphqlHTTP } = require('express-graphql');
-var { buildSchema } = require('graphql');
+import { createServer } from 'http'
+import { graphqlHTTP } from 'express-graphql'
+import { buildSchema, execute, subscribe } from 'graphql'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 
 const PORT = process.env.PORT || 8080;
 
@@ -9,22 +11,45 @@ var schema = buildSchema(`
   type Query {
     hello: String
   }
+  
+  type Subscription {
+    greetings: String
+  }
 `);
 
-// The root provides a resolver function for each API endpoint
-var root = {
-  hello: () => {
-    return 'Hello world!';
+const resolvers = {
+  Query: {
+    hello: () => {
+      console.log('PROCESS QUERY')
+      return 'Hello World!'
+    },
   },
+  Subscription: {
+    greetings: async function * greeter() {
+      console.log('PROCESS SUBSCRIPTION')
+      for (const hi of ['Hi', 'Bonjour', 'Hola', 'Ciao', 'Zdravo']) {
+        yield { greetings: hi }
+      }
+    }
+  }
 };
+
+const executableSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+})
+
+// const schema = makeExecutableSchema({
+//   typeDefs: typeDefs,
+//   resolvers: resolvers,
+// });
 
 export const start = () => {
   var app = express();
   app.use(
     '/',
     graphqlHTTP({
-      schema: schema,
-      rootValue: root,
+      schema: executableSchema,
       graphiql: true,
     })
   );
