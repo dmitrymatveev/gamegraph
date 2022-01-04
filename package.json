@@ -1,9 +1,9 @@
 {
-  "name": "gamegraph",
+  "name": "@janderbot/gamegraph",
   "version": "0.1.0",
-  "description": "GraphQL web data persistence and realtime pub/sub framework.",
+  "description": "Web framework for building real-time GRIP capable api application with GraphQL",
   "main": "src/index.ts",
-  "author": "janderbot",
+  "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
   "private": true,
   "scripts": {

@@ -5,8 +5,7 @@ Web framework for building [NodeJs](https://nodejs.dev/) real-time [GRIP](https:
 > npm install gamegraph
 
 
-> TODO: add GRIP handling https://github.com/fanout/js-serve-grip 
-TODO: add datalayer caching https://github.com/graphql/dataloader  
 TODO: use graphQl modules https://www.graphql-modules.com/ type-safety, cqrs, testability  
 TODO: add permissions to graph https://github.com/maticzav/graphql-shield  
+TODO: add datalayer caching https://github.com/graphql/dataloader  
 TODO: investigate graphQl integration QA https://graphql-inspector.com/  
