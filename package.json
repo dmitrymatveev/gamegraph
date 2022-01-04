@@ -11,13 +11,14 @@
     "dev": "tsnd --respawn src/index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docker:build": "docker build . -t gamegraph",
-    "docker:pushpin": "docker run -d --rm -p 7999:7999 -p 5560-5563:5560-5563 --rm fanout/pushpin:latest",
-    "docker:gamegraph": "docker run -d --rm -p 7999:7999 -p 5560-5563:5560-5563 -d gamegraph:latest",
+    "docker:gamegraph:build": "docker build . -t gamegraph",
+    "docker:gamegraph:start": "docker run -d --rm -p 7999:7999 -p 5560-5563:5560-5563 -d gamegraph:latest",
+    "docker:pushpin:start": "cross-env-shell docker run -d -ti -p 7999:7999 -p 5560-5563:5560-5563 -v $INIT_CWD/pushpin:/etc/pushpin/ fanout/pushpin:latest",
     "package:linux-x64": "pkg build/index.js -o gamegraph -t node14-linux-x64"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "cross-env": "^7.0.3",
     "pkg": "^5.5.1",
     "ts-node-dev": "^1.1.8",
     "tslint": "^6.1.3",

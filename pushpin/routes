@@ -1,0 +1,2 @@
+*,ssl=yes 192.168.1.100:8080,over_http
+*,proto=http 192.168.1.100:8080,over_http
