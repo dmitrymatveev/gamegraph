@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker:gamegraph:build": "docker build . -t gamegraph",
     "docker:gamegraph:start": "docker run -d --rm -p 7999:7999 -p 5560-5563:5560-5563 -d gamegraph:latest",
-    "docker:pushpin:start": "cross-env-shell docker run -d -ti -p 7999:7999 -p 5560-5563:5560-5563 -v $INIT_CWD/pushpin:/etc/pushpin/ fanout/pushpin:latest",
+    "docker:pushpin:start": "cross-env-shell docker run -d -ti --rm -p 7999:7999 -p 5560-5563:5560-5563 -v $INIT_CWD/pushpin:/etc/pushpin/ fanout/pushpin:latest",
     "package:linux-x64": "pkg build/index.js -o gamegraph -t node14-linux-x64"
   },
   "devDependencies": {
