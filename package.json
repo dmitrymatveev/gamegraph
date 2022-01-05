@@ -5,7 +5,6 @@
   "main": "src/index.ts",
   "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "start": "node build/index.js",
     "dev": "tsnd --respawn src/index.ts",
