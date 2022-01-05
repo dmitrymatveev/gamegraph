@@ -1,6 +1,6 @@
 {
   "name": "@janderbot/gamegraph",
-  "version": "0.1.12-preview",
+  "version": "0.1.13",
   "description": "Web framework for building real-time GRIP capable api application with GraphQL",
   "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
