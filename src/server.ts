@@ -1,11 +1,9 @@
-import express, { RequestHandler } from 'express';
+import express from 'express';
 import {
   IRequestGrip,
   IResponseGrip,
   ServeGrip
 } from '@fanoutio/serve-grip';
-import { buildSchema, execute, subscribe } from 'graphql';
-import { makeExecutableSchema } from '@graphql-tools/schema';
 import {
   getGraphQLParameters,
   processRequest,
@@ -13,6 +11,8 @@ import {
   sendResult,
   shouldRenderGraphiQL,
 } from 'graphql-helix';
+import { Container } from 'brandi';
+import { buildSchemaFromProviders, SchemaProvider } from './modules';
 
 declare global {
   namespace Express {
@@ -28,52 +28,8 @@ declare global {
 
 const PORT = process.env.PORT || 8080;
 
-// Construct a schema, using GraphQL schema language
-var schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-  
-  type Subscription {
-    greetings: String
-  }
-`);
-
-const resolvers = {
-  Query: {
-    hello: () => {
-      console.log('PROCESS QUERY');
-      return 'Hello World!';
-    },
-  },
-  Subscription: {
-    greetings: {
-      subscribe: async function* greeter() {
-        console.log('PROCESS SUBSCRIPTION');
-        for (const hi of [
-          'Hi',
-          'Bonjour',
-          'Hola',
-          'Ciao',
-          'Zdravo',
-          'Privet',
-        ]) {
-          yield { greetings: hi };
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      },
-    },
-  },
-};
-
-const executableSchema = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers,
-});
-
-const print = (obj:object) => JSON.stringify(obj, null, 2);
-
-export const start = () => {
+export const start = (schemaProviders: SchemaProvider[]) => {
+  const schema = buildSchemaFromProviders(schemaProviders);
   const app = express();
   const serveGrip = new ServeGrip({
     grip: {
@@ -100,32 +56,21 @@ export const start = () => {
       query: req.query,
     };
 
-    console.log(`
-      GRIP: ${print(req.grip)}
-    `);
-
     if (shouldRenderGraphiQL(request)) {
       res.send(renderGraphiQL());
     } else {
       const { operationName, query, variables } = getGraphQLParameters(request);
-
-      console.log(`
-        QUERY: ${print({ operationName, query, variables })}
-      `);
 
       const result = await processRequest({
         operationName,
         query,
         variables,
         request,
-        schema: executableSchema,
-        // contextFactory: () => ({
-        //   // session: req.session,
-        // }),
+        schema,
+        contextFactory: () => new Container(),
       });
 
       sendResult(result, res);
-      console.log('END')
     }
   });
 

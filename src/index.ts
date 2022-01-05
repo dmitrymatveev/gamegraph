@@ -1,7 +1,3 @@
-import { start } from './server'
 
-export const server = {
-    start
-}
-
-start();
+export { SchemaProvider, Container } from './modules';
+export * as server from './server'
