@@ -3,8 +3,6 @@ import { Container } from 'brandi';
 import GiraphQlBuilder from '@giraphql/core';
 import { GraphQLSchema } from 'graphql';
 
-export { Container }
-
 export type SchemaTypes = Partial<GiraphQLSchemaTypes.UserSchemaTypes & { Context: Container }>
 
 export type SchemaBuilder = GiraphQLSchemaTypes.SchemaBuilder<GiraphQLSchemaTypes.ExtendDefaultTypes<SchemaTypes>>
