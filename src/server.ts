@@ -2,7 +2,7 @@ import express from 'express';
 import {
   IRequestGrip,
   IResponseGrip,
-  ServeGrip
+  ServeGrip,
 } from '@fanoutio/serve-grip';
 import {
   getGraphQLParameters,
@@ -13,6 +13,10 @@ import {
 } from 'graphql-helix';
 import { Container } from 'brandi';
 import { buildSchemaFromProviders, SchemaProvider } from './modules';
+import { altairExpress } from 'altair-express-middleware';
+import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
+import { webSocketHandler } from './handlers/ws';
+import { WebSocketMessageFormat } from '@fanoutio/grip';
 
 declare global {
   namespace Express {
@@ -26,24 +30,46 @@ declare global {
   }
 }
 
+
 const PORT = process.env.PORT || 8080;
 
 export const start = (schemaProviders: SchemaProvider[]) => {
   const schema = buildSchemaFromProviders(schemaProviders);
   const app = express();
-  const serveGrip = new ServeGrip({
+  const gripServe = new ServeGrip({
     grip: {
-      control_uri: 'localhost:5561', // Publishing endpoint
+      control_uri: 'http://localhost:5561/', // Publishing endpoint
     },
     gripProxyRequired: false,
   });
 
   app.use(express.json());
-  app.use(serveGrip);
+  app.use(gripServe);
+
+  app.use('/altair', altairExpress({
+    endpointURL: '/',
+    subscriptionsEndpoint: 'ws:localhost:7999',
+    initialQuery: '{ hello }',
+  }));
+  
+  app.use('/voyager', voyagerMiddleware({ endpointUrl: '/' }));
+
+  app.use('/subscriptions', webSocketHandler({ gripServe, schema }));
+
+  
+  app.post('/api/broadcast', express.text({ type: '*/*' }), async (req, res) => {
+
+    const publisher = gripServe.getPublisher();
+    await publisher.publishFormats('test', new WebSocketMessageFormat(req.body));
+
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Ok\n');
+
+  });
 
   app.use(async (req, res) => {
     // Run the middleware
-    if (!(await serveGrip.run(req, res))) {
+    if (!(await gripServe.run(req, res))) {
       // If serveGrip.run() has returned false, it means the middleware has already
       // sent and ended the response, usually due to an error.
       return;
