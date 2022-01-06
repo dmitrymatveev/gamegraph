@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
+    "target": "ES6",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
@@ -14,6 +14,6 @@
     "src"
   ],
   "watchOptions": {
-    "excludeDirectories": ["**/node_modules", "build"],
+    "excludeDirectories": ["**/node_modules", "dist"],
   }
 }
