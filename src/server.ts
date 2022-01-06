@@ -1,9 +1,5 @@
 import express from 'express';
-import {
-  IRequestGrip,
-  IResponseGrip,
-  ServeGrip
-} from '@fanoutio/serve-grip';
+import { IRequestGrip, IResponseGrip, ServeGrip } from '@fanoutio/serve-grip';
 import {
   getGraphQLParameters,
   processRequest,
@@ -13,6 +9,7 @@ import {
 } from 'graphql-helix';
 import { Container } from 'brandi';
 import { buildSchemaFromProviders, SchemaProvider } from './modules';
+import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
 
 declare global {
   namespace Express {
@@ -40,6 +37,10 @@ export const start = (schemaProviders: SchemaProvider[]) => {
 
   app.use(express.json());
   app.use(serveGrip);
+
+  if (process.env.NODE_ENV !== 'production') {
+    app.use('/docs', voyagerMiddleware({ endpointUrl: '/' }));
+  }
 
   app.use(async (req, res) => {
     // Run the middleware
@@ -74,8 +75,7 @@ export const start = (schemaProviders: SchemaProvider[]) => {
     }
   });
 
-  app.listen(PORT, () =>
+  return app.listen(PORT, () =>
     console.log(`Running a GraphQL API server at http://localhost:${PORT}`)
   );
-  return app;
 };

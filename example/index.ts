@@ -14,11 +14,11 @@ server.start([
       fields: (t) => ({
         greetings: t.string({
           resolve(root, args, context) {
-            console.log('resolve', context)
+            console.log('resolve', context);
             return 'event ' + root;
           },
           async *subscribe(root, args, context) {
-            console.log('subscribe')
+            console.log('subscribe');
             for (var event in [0, 0, 0, 0]) {
               yield event;
               await new Promise((resolve) => setTimeout(resolve, 1000));
