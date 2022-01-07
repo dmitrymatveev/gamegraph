@@ -8,8 +8,9 @@ import {
   shouldRenderGraphiQL,
 } from 'graphql-helix';
 import { Container } from 'brandi';
-import { buildSchemaFromProviders, SchemaProvider } from './modules';
+import { buildSchemaFromProviders } from './modules';
 import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
+import { Options } from './options';
 
 declare global {
   namespace Express {
@@ -25,12 +26,18 @@ declare global {
 
 const PORT = process.env.PORT || 8080;
 
-export const start = (schemaProviders: SchemaProvider[]) => {
+export const start = (options: Options) => {
+  const { 
+    renderDocs,
+    controlUrl,
+    schemaProviders
+  } = options;
+
   const schema = buildSchemaFromProviders(schemaProviders);
   const app = express();
   const serveGrip = new ServeGrip({
     grip: {
-      control_uri: 'localhost:5561', // Publishing endpoint
+      control_uri: controlUrl
     },
     gripProxyRequired: false,
   });
@@ -38,11 +45,11 @@ export const start = (schemaProviders: SchemaProvider[]) => {
   app.use(express.json());
   app.use(serveGrip);
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (renderDocs) {
     app.use('/docs', voyagerMiddleware({ endpointUrl: '/' }));
   }
 
-  app.use(async (req, res) => {
+  app.use('/', async (req, res) => {
     // Run the middleware
     if (!(await serveGrip.run(req, res))) {
       // If serveGrip.run() has returned false, it means the middleware has already
@@ -57,7 +64,7 @@ export const start = (schemaProviders: SchemaProvider[]) => {
       query: req.query,
     };
 
-    if (shouldRenderGraphiQL(request)) {
+    if (renderDocs && shouldRenderGraphiQL(request)) {
       res.send(renderGraphiQL());
     } else {
       const { operationName, query, variables } = getGraphQLParameters(request);
