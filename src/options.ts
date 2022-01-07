@@ -13,6 +13,10 @@ export type Options = {
      */
     renderDocs?: boolean
     /**
+     * Application port.
+     */
+    port?: number
+    /**
      * Pushpin publishing endpoint.
      * @see https://github.com/fanout/js-serve-grip#configuration
      */
