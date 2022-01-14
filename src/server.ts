@@ -18,7 +18,12 @@ declare global {
 }
 
 export const start = (options: Options) => {
-  const { port = 8080, renderDocs, controlUrl, schemaProviders } = options;
+  const {
+    port = 8080,
+    controlUrl = 'http://localhost:5561',
+    renderDocs,
+    schemaProviders,
+  } = options;
 
   const schema = buildSchemaFromProviders(schemaProviders);
   const app = express();

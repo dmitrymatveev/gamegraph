@@ -13,11 +13,11 @@ export type Options = {
      */
     renderDocs?: boolean
     /**
-     * Application port.
+     * Application port. Default 8080
      */
     port?: number
     /**
-     * Pushpin publishing endpoint.
+     * Pushpin publishing endpoint. Default http://localhost:5561
      * @see https://github.com/fanout/js-serve-grip#configuration
      */
     controlUrl: string
