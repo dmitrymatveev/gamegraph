@@ -3,7 +3,6 @@ import { Container } from 'brandi';
 import GraphQlBuilder from '@pothos/core';
 import { GraphQLSchema } from 'graphql';
 
-
 export type SchemaTypes = Partial<PothosSchemaTypes.UserSchemaTypes & { Context: Container }>
 
 export type SchemaBuilder = PothosSchemaTypes.SchemaBuilder<PothosSchemaTypes.ExtendDefaultTypes<SchemaTypes>>

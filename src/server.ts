@@ -35,11 +35,14 @@ export const start = (options: Options) => {
   });
 
   app.use(express.json());
+
   app.use(serveGrip);
 
-  app.use('/', graphQlResponse({ schema, serveGrip, ...options }));
+  if (renderDocs) {
+    app.use('/schema', voyagerMiddleware({ endpointUrl: '/' }));
+  }
 
-  renderDocs && app.use('/docs', voyagerMiddleware({ endpointUrl: '/' }));
+  app.use('/', graphQlResponse({ schema, serveGrip, ...options }));
 
   return app.listen(port, () =>
     console.log(`Running a GraphQL API server at http://localhost:${port}`)
