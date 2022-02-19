@@ -1,6 +1,6 @@
-import { SchemaProvider } from './modules';
+import { ApplicationFactory } from './modules';
 
-export type Options = {
+export type Options<TContext> = {
     /**
      * When True, GraphiQl and graphql-voyager will be rendered.
      * Set this True in development environments.
@@ -13,12 +13,16 @@ export type Options = {
      */
     renderDocs?: boolean
     /**
-     * Pushpin publishing endpoint.
+     * Application port. Default 8080
+     */
+    port?: number
+    /**
+     * Pushpin publishing endpoint. Default http://localhost:5561
      * @see https://github.com/fanout/js-serve-grip#configuration
      */
     controlUrl: string
     /**
      * List of GraphQL schema builders.
      */
-    schemaProviders: SchemaProvider[]
+    schemaProviders: ApplicationFactory<TContext>[]
 }

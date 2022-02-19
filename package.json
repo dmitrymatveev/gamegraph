@@ -1,6 +1,6 @@
 {
   "name": "@janderbot/gamegraph",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "description": "Web framework for building real-time GRIP capable api application with GraphQL",
   "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@fanoutio/serve-grip": "^1.1.9",
-    "@giraphql/core": "^2.22.0",
+    "@pothos/core": "^3.1.1",
     "brandi": "^4.0.1",
     "express": "^4.17.1",
     "graphql": "^16.2.0",
