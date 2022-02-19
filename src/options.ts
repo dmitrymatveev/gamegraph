@@ -1,6 +1,6 @@
-import { SchemaProvider } from './modules';
+import { ApplicationFactory } from './modules';
 
-export type Options = {
+export type Options<TContext> = {
     /**
      * When True, GraphiQl and graphql-voyager will be rendered.
      * Set this True in development environments.
@@ -24,5 +24,5 @@ export type Options = {
     /**
      * List of GraphQL schema builders.
      */
-    schemaProviders: SchemaProvider[]
+    schemaProviders: ApplicationFactory<TContext>[]
 }

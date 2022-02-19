@@ -1,9 +1,9 @@
 import express from 'express';
 import { IRequestGrip, IResponseGrip, ServeGrip } from '@fanoutio/serve-grip';
-import { buildSchemaFromProviders } from './modules';
 import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
 import { Options } from './options';
-import { graphQlResponse } from './middleware/graphQlResponse';
+import { graphQlMiddleware } from './middleware/graphQlMiddleware';
+import { createSchemaFromApplicationContext } from './modules';
 
 declare global {
   namespace Express {
@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export const start = (options: Options) => {
+export const start = <TContext>(options: Options<TContext>) => {
   const {
     port = 8080,
     controlUrl = 'http://localhost:5561',
@@ -25,7 +25,7 @@ export const start = (options: Options) => {
     schemaProviders,
   } = options;
 
-  const schema = buildSchemaFromProviders(schemaProviders);
+  const schema = createSchemaFromApplicationContext<TContext>(schemaProviders);
   const app = express();
   const serveGrip = new ServeGrip({
     grip: {
@@ -42,7 +42,7 @@ export const start = (options: Options) => {
     app.use('/schema', voyagerMiddleware({ endpointUrl: '/' }));
   }
 
-  app.use('/', graphQlResponse({ schema, serveGrip, ...options }));
+  app.use('/', graphQlMiddleware<TContext>({ schema, serveGrip, ...options }));
 
   return app.listen(port, () =>
     console.log(`Running a GraphQL API server at http://localhost:${port}`)

@@ -1,35 +1,69 @@
+import { MergedScalars } from '@pothos/core';
 import { server } from '../src';
+import { ApplicationContext } from '../src/context';
+import {
+  ApplicationFactory,
+  ExtendedDefaultContext,
+  QueryBuilder,
+  SubscriptionBuilder,
+} from '../src/modules';
 
-server.start({
+type TestContext = ExtendedDefaultContext<{
+  Scalars: {
+    Test: {
+      Input: Object;
+      Output: Object;
+    };
+  };
+  Context: {
+    customContextValue: string;
+  };
+}>;
+
+const helloQuery = (query: QueryBuilder<TestContext>) => ({
+  hello: query.string({
+    resolve: () => 'Hello \\o/',
+  }),
+});
+
+const helloSubscription = (subscription: SubscriptionBuilder<TestContext>) => ({
+  greetings: subscription.string({
+    resolve(root, args, context) {
+      console.log('resolve', context);
+      return 'event ' + root;
+    },
+    async *subscribe(root, args, context) {
+      console.log('subscribe');
+      for (var event in [0, 0, 0, 0]) {
+        yield event;
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    },
+  }),
+});
+
+const testApplication: ApplicationFactory<TestContext> = (schema) => {
+  schema.scalarType('Test', {
+    serialize: (n) => {
+      return n;
+    },
+  });
+
+  schema.queryType({
+    fields: (t) => ({
+      ...helloQuery(t),
+    }),
+  });
+
+  schema.subscriptionType({
+    fields: (t) => ({
+      ...helloSubscription(t),
+    }),
+  });
+};
+
+server.start<TestContext>({
   renderDocs: true,
   controlUrl: 'http://localhost:5561',
-  schemaProviders: [
-    (schema) => {
-      schema.queryType({
-        fields: (t) => ({
-          hello: t.string({
-            resolve: () => 'Hello \\o/',
-          }),
-        }),
-      });
-  
-      schema.subscriptionType({
-        fields: (t) => ({
-          greetings: t.string({
-            resolve(root, args, context) {
-              console.log('resolve', context);
-              return 'event ' + root;
-            },
-            async *subscribe(root, args, context) {
-              console.log('subscribe');
-              for (var event in [0, 0, 0, 0]) {
-                yield event;
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-              }
-            },
-          }),
-        }),
-      });
-    },
-  ]
+  schemaProviders: [testApplication],
 });

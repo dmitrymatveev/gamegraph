@@ -1,11 +1,10 @@
 export {
-  ApplicationContext,
-  SchemaProvider,
-  SchemaBuilder,
+  ExtendedDefaultContext,
+  ApplicationSchemaBuilder,
+  ApplicationFactory,
+  SubscriptionBuilder,
   QueryBuilder,
   MutationBuilder,
-  SubscriptionBuilder,
-  ObjectBuilder,
 } from './modules';
 export { Options } from './options';
 export * as server from './server';
