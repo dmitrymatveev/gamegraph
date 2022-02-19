@@ -2,6 +2,8 @@ import SchemaBuilder from '@pothos/core';
 import { GraphQLSchema } from 'graphql';
 import { ApplicationContext } from './context';
 
+export type Scalar<TInput, TOutput> = { Input: TInput; Output: TOutput };
+
 // Consumer extended default types, wrapps custom types of T.
 export type ExtendedDefaultContext<
   T extends Partial<PothosSchemaTypes.UserSchemaTypes>

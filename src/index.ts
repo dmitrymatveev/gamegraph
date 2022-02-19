@@ -1,4 +1,5 @@
 export {
+  Scalar,
   ExtendedDefaultContext,
   ApplicationSchemaBuilder,
   ApplicationFactory,
