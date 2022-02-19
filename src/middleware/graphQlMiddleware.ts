@@ -48,7 +48,9 @@ export const graphQlMiddleware: <TContext>(
     variables,
     request,
     schema,
-    contextFactory: () => new Container(),
+    contextFactory: () => ({
+      container: new Container()
+    }),
   });
 
   sendResult(result, res);
