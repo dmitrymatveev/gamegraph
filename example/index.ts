@@ -1,19 +1,15 @@
-import { MergedScalars } from '@pothos/core';
-import { server } from '../src';
-import { ApplicationContext } from '../src/context';
 import {
+  server,
+  Scalar,
   ApplicationFactory,
   ExtendedDefaultContext,
   QueryBuilder,
   SubscriptionBuilder,
-} from '../src/modules';
+} from '..';
 
 type TestContext = ExtendedDefaultContext<{
   Scalars: {
-    Test: {
-      Input: Object;
-      Output: Object;
-    };
+    Test: Scalar<Object, Object>;
   };
   Context: {
     customContextValue: string;

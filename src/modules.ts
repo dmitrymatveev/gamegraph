@@ -1,68 +1,61 @@
+import { mergeDeepRight, forEach, clone } from 'ramda';
 import SchemaBuilder from '@pothos/core';
+import DataloaderPlugin from '@pothos/plugin-dataloader';
 import { GraphQLSchema } from 'graphql';
-import { ApplicationContext } from './context';
+import {
+  ApplicationFactory,
+  ApplicationSchemaBuilder,
+  ExtendedDefaultContext,
+} from './types';
 
-export type Scalar<TInput, TOutput> = { Input: TInput; Output: TOutput };
+type BuilderOptions<T extends Partial<PothosSchemaTypes.UserSchemaTypes>> =
+  PothosSchemaTypes.SchemaBuilderOptions<
+    PothosSchemaTypes.ExtendDefaultTypes<T>
+  >;
 
-// Consumer extended default types, wrapps custom types of T.
-export type ExtendedDefaultContext<
-  T extends Partial<PothosSchemaTypes.UserSchemaTypes>
-> = PothosSchemaTypes.ExtendDefaultTypes<ApplicationContext & T>;
-
-// Shortcut type for pothos schema builder with custom schema types.
-export type ApplicationSchemaBuilder<
-  T extends Partial<PothosSchemaTypes.UserSchemaTypes>
-> = PothosSchemaTypes.SchemaBuilder<ExtendedDefaultContext<T>>;
 // Shortcut type for pothos options with custom types.
-type Options<T extends Partial<PothosSchemaTypes.UserSchemaTypes>> =
+type SchemaOptions<T extends Partial<PothosSchemaTypes.UserSchemaTypes>> =
   PothosSchemaTypes.BuildSchemaOptions<ExtendedDefaultContext<T>>;
 
-/**
- * Convenience application entry point callback.
- */
-export type ApplicationFactory<
-  T extends Partial<PothosSchemaTypes.UserSchemaTypes>
-> = (builder: ApplicationSchemaBuilder<T>) => void;
+const addPlugins = <T>(options?: BuilderOptions<T>) =>
+  mergeDeepRight(options ?? {}, {
+    plugins: [DataloaderPlugin],
+  }) as any as BuilderOptions<T>;
 
-/**
- * Convenience subscription schema factory
- */
-export type SubscriptionBuilder<
-  T extends Partial<PothosSchemaTypes.UserSchemaTypes>
-> = PothosSchemaTypes.SubscriptionFieldBuilder<
-  ExtendedDefaultContext<T>,
-  object & {}
->;
+const createSchemaBuilder = <T>(options: BuilderOptions<T>) =>
+  new SchemaBuilder<T>(options) as any as ApplicationSchemaBuilder<T>;
 
-/**
- * Convenience query schema factory
- */
-export type QueryBuilder<T extends Partial<PothosSchemaTypes.UserSchemaTypes>> =
-  PothosSchemaTypes.QueryFieldBuilder<ExtendedDefaultContext<T>, object & {}>;
+const attachSchemaProviders = <T>(
+  builder: ApplicationSchemaBuilder<T>,
+  providers: ApplicationFactory<T>[]
+) => {
+  forEach<ApplicationFactory<T>>(
+    (addProvider) => addProvider(builder),
+    providers
+  );
+  return builder;
+};
 
-/**
- * Convenience mutation schema factory
- */
-export type MutationBuilder<
-  T extends Partial<PothosSchemaTypes.UserSchemaTypes>
-> = PothosSchemaTypes.MutationFieldBuilder<
-  ExtendedDefaultContext<T>,
-  object & {}
->;
+const applySchema = <T, U>(
+  builder: ApplicationSchemaBuilder<T>,
+  options?: SchemaOptions<U>
+) => builder.toSchema(clone(options || ({} as SchemaOptions<U>)));
 
 /**
  * Creates graphQl schema from given providers.
- * @param providers List of application factories
- * @param state initial context instance
- * @param options pothos graphQl related options
+ * @param schemaProviders List of application factories
+ * @param builderOptions initial context instance
+ * @param schemaOptions schema options
  * @returns generated graphQl schema
  */
 export const createSchemaFromApplicationContext = <T>(
-  providers: ApplicationFactory<T>[],
-  state?: T,
-  options?: Options<T>
+  schemaProviders: ApplicationFactory<T>[],
+  builderOptions?: BuilderOptions<T>,
+  schemaOptions?: SchemaOptions<T>
 ): GraphQLSchema => {
-  const builder = new SchemaBuilder<T>(state || {});
-  providers.forEach((addToSchema) => addToSchema(builder as any));
-  return builder.toSchema({ ...(options || {}) });
+  const customPlugins = addPlugins(builderOptions);
+  const builder = createSchemaBuilder(customPlugins);
+  attachSchemaProviders(builder, schemaProviders);
+  const schema = applySchema(builder, schemaOptions);
+  return schema;
 };

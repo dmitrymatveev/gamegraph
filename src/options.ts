@@ -1,4 +1,4 @@
-import { ApplicationFactory } from './modules';
+import { ApplicationFactory } from './types';
 
 export type Options<TContext> = {
     /**

@@ -6,7 +6,7 @@ export {
   SubscriptionBuilder,
   QueryBuilder,
   MutationBuilder,
-} from './modules';
+} from './types';
 export { Options } from './options';
 export * as server from './server';
 export * as pothos from '@pothos/core';
