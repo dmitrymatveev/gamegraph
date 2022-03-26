@@ -1,3 +1,7 @@
+export * as pothos from '@pothos/core';
+export * as brandi from 'brandi';
+export * from '@pothos/plugin-dataloader';
+
 export {
   Scalar,
   ExtendedDefaultContext,
@@ -7,7 +11,9 @@ export {
   QueryBuilder,
   MutationBuilder,
 } from './types';
-export { Options } from './options';
+
+export { 
+  Options
+} from './options';
+
 export * as server from './server';
-export * as pothos from '@pothos/core';
-export * as brandi from 'brandi';

@@ -5,6 +5,7 @@ import {
   ExtendedDefaultContext,
   QueryBuilder,
   SubscriptionBuilder,
+  ApplicationSchemaBuilder,
 } from '..';
 
 type TestContext = ExtendedDefaultContext<{
@@ -16,10 +17,52 @@ type TestContext = ExtendedDefaultContext<{
   };
 }>;
 
-const helloQuery = (query: QueryBuilder<TestContext>) => ({
+class TestItem {
+  id?: string
+}
+
+const helloQuery = (query: QueryBuilder<TestContext>, schema: ApplicationSchemaBuilder<TestContext>) => ({
   hello: query.string({
     resolve: () => 'Hello \\o/',
   }),
+  user: query.field({
+    type: schema.loadableObject('TestItem', {
+      fields: (t) => ({
+        id: t.exposeString('id' as never),
+      }),
+      load: (ids, context) => {
+
+        // assume there is datastore
+        const data = {
+          'a': { id: 'a' },
+          'b': { id: 'b' },
+          'c': { id: 'c' },
+        } as {[key:string|symbol]:any};
+  
+        const proxy = new Proxy(data, {
+          get: (data, key) => data[key] || new Error('missing'),
+        });
+  
+        // load data from database
+        return new Promise<(TestItem | Error)[]>((resolve, reject) => {
+          const value = (id: string|number|bigint) => {
+            const res = proxy[`${id}`];
+            return res;
+          }
+
+          const loadedValues = ids.map(value);
+          resolve(loadedValues);
+        });
+      },
+    }),
+    args: {
+      id: query.arg.string({ required: true }),
+    },
+    // Here we can just return the ID directly rather than loading the user ourselves
+    resolve: (root, args) => {
+      return args.id;
+    }
+  })
 });
 
 const helloSubscription = (subscription: SubscriptionBuilder<TestContext>) => ({
@@ -47,7 +90,7 @@ const testApplication: ApplicationFactory<TestContext> = (schema) => {
 
   schema.queryType({
     fields: (t) => ({
-      ...helloQuery(t),
+      ...helloQuery(t, schema),
     }),
   });
 
