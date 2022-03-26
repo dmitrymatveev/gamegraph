@@ -21,12 +21,15 @@ class TestItem {
   id?: string
 }
 
-const helloQuery = (query: QueryBuilder<TestContext>, schema: ApplicationSchemaBuilder<TestContext>) => ({
+const helloQuery = (query: QueryBuilder<TestContext>) => ({
   hello: query.string({
     resolve: () => 'Hello \\o/',
   }),
+});
+
+const loadableObject = (query: QueryBuilder<TestContext>, schema: ApplicationSchemaBuilder<TestContext>) => ({
   user: query.field({
-    type: schema.loadableObject('TestItem', {
+    type: schema.loadableObject(TestItem.name, {
       fields: (t) => ({
         id: t.exposeString('id' as never),
       }),
@@ -90,7 +93,8 @@ const testApplication: ApplicationFactory<TestContext> = (schema) => {
 
   schema.queryType({
     fields: (t) => ({
-      ...helloQuery(t, schema),
+      ...helloQuery(t),
+      ...loadableObject(t, schema)
     }),
   });
 
