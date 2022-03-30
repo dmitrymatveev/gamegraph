@@ -26,7 +26,6 @@ export const start = <TContext>(options: Options<TContext>) => {
   } = options;
 
   const schema = createSchemaFromApplicationContext<TContext>(schemaProviders);
-  
   const app = express();
   const serveGrip = new ServeGrip({
     grip: {
