@@ -1,6 +1,5 @@
 import express from 'express';
 import { IRequestGrip, IResponseGrip, ServeGrip } from '@fanoutio/serve-grip';
-import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
 import { Options } from './options';
 import { graphQlMiddleware } from './middleware/graphQlMiddleware';
 import { createSchemaFromApplicationContext } from './modules';
@@ -39,7 +38,8 @@ export const start = <TContext>(options: Options<TContext>) => {
   app.use(serveGrip);
 
   if (renderDocs) {
-    app.use('/schema', voyagerMiddleware({ endpointUrl: '/' }));
+    const docsMiddleware = require("./middleware/docsMiddleware");
+    app.use('/schema', docsMiddleware);
   }
 
   app.use('/', graphQlMiddleware<TContext>({ schema, serveGrip, ...options }));

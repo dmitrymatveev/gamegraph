@@ -1,6 +1,6 @@
 {
   "name": "@janderbot/gamegraph",
-  "version": "0.2.1",
+  "version": "0.2.4-rc",
   "description": "Web framework for building real-time GRIP capable api application with GraphQL",
   "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
@@ -26,7 +26,6 @@
     "@types/express": "^4.17.13",
     "@types/ramda": "^0.28.3",
     "cross-env": "^7.0.3",
-    "graphql-voyager": "^1.0.0-rc.31",
     "pkg": "^5.5.1",
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
@@ -34,6 +33,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
+    "graphql-voyager": "^1.0.0-rc.31",
     "@fanoutio/serve-grip": "^1.1.9",
     "@pothos/core": "^3.1.1",
     "@pothos/plugin-dataloader": "^3.3.1",
