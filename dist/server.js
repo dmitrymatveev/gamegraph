@@ -6,11 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 const express_1 = __importDefault(require("express"));
 const serve_grip_1 = require("@fanoutio/serve-grip");
-const middleware_1 = require("graphql-voyager/middleware");
 const graphQlMiddleware_1 = require("./middleware/graphQlMiddleware");
 const modules_1 = require("./modules");
 const start = (options) => {
-    const { port = 8080, controlUrl = 'http://localhost:5561', renderDocs, schemaProviders, } = options;
+    const { port = 8080, controlUrl = 'http://localhost:5561', schemaProviders, } = options;
     const schema = (0, modules_1.createSchemaFromApplicationContext)(schemaProviders);
     const app = (0, express_1.default)();
     const serveGrip = new serve_grip_1.ServeGrip({
@@ -21,9 +20,6 @@ const start = (options) => {
     });
     app.use(express_1.default.json());
     app.use(serveGrip);
-    if (renderDocs) {
-        app.use('/schema', (0, middleware_1.express)({ endpointUrl: '/' }));
-    }
     app.use('/', (0, graphQlMiddleware_1.graphQlMiddleware)(Object.assign({ schema, serveGrip }, options)));
     return app.listen(port, () => console.log(`Running a GraphQL API server at http://localhost:${port}`));
 };
