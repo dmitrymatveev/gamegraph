@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphQlMiddleware = void 0;
 const brandi_1 = require("brandi");
 const graphql_helix_1 = require("graphql-helix");
-const createDependencyInjectionContainer = ({ registerDependencies, }) => (registerDependencies && new brandi_1.Container()) || null;
+const createDependencyInjectionContainer = ({ registerDependencies }, container = new brandi_1.Container()) => (registerDependencies && registerDependencies(container) && container) ||
+    null;
 const graphQlMiddleware = (context) => {
     const rootContainer = createDependencyInjectionContainer(context);
     return (req, res) => __awaiter(void 0, void 0, void 0, function* () {

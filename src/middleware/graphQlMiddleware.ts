@@ -16,15 +16,16 @@ export type GraphQlMiddlewareOptions<TContext> = Options<TContext> & {
   schema: GraphQLSchema;
 };
 
-const createDependencyInjectionContainer = <TContext>({
-  registerDependencies,
-}: GraphQlMiddlewareOptions<TContext>) =>
-  (registerDependencies && new Container()) || null;
+const createDependencyInjectionContainer = <TContext>(
+  { registerDependencies }: GraphQlMiddlewareOptions<TContext>,
+  container: Container = new Container()
+) =>
+  (registerDependencies && registerDependencies(container) && container) ||
+  null;
 
 export const graphQlMiddleware: <TContext>(
   context: GraphQlMiddlewareOptions<TContext>
 ) => RequestHandler = (context) => {
-  
   const rootContainer = createDependencyInjectionContainer(context);
 
   return async (req, res) => {
