@@ -3,6 +3,7 @@ import { IRequestGrip, IResponseGrip, ServeGrip } from '@fanoutio/serve-grip';
 import { Options } from './options';
 import { graphQlMiddleware } from './middleware/graphQlMiddleware';
 import { createSchemaFromApplicationContext } from './modules';
+import { ExtendedDefaultContext } from '.';
 
 declare global {
   namespace Express {
@@ -16,7 +17,7 @@ declare global {
   }
 }
 
-export const start = <TContext>(options: Options<TContext>) => {
+export const start = <TContext extends ExtendedDefaultContext<any>>(options: Options<TContext>) => {
   const {
     port = 8080,
     controlUrl = 'http://localhost:5561',

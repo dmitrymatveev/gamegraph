@@ -10,14 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.graphQlMiddleware = void 0;
-const brandi_1 = require("brandi");
 const graphql_helix_1 = require("graphql-helix");
-const createDependencyInjectionContainer = ({ registerDependencies }, container = new brandi_1.Container()) => (registerDependencies && registerDependencies(container) && container) ||
-    null;
-const graphQlMiddleware = (context) => {
-    const rootContainer = createDependencyInjectionContainer(context);
+const graphQlMiddleware = (options) => {
     return (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { serveGrip, schema, renderDocs } = context;
+        const { serveGrip, schema, renderDocs, createRequestContext } = options;
         // Run the middleware
         if (!(yield serveGrip.run(req, res))) {
             // If serveGrip.run() has returned false, it means the middleware has already
@@ -41,9 +37,7 @@ const graphQlMiddleware = (context) => {
             variables,
             request,
             schema,
-            contextFactory: () => ({
-                container: new brandi_1.Container().extend(rootContainer),
-            }),
+            contextFactory: createRequestContext,
         });
         (0, graphql_helix_1.sendResult)(result, res);
     });

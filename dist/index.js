@@ -24,6 +24,5 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.server = exports.pothos = void 0;
 exports.pothos = __importStar(require("@pothos/core"));
-__exportStar(require("brandi"), exports);
 __exportStar(require("@pothos/plugin-dataloader"), exports);
 exports.server = __importStar(require("./server"));

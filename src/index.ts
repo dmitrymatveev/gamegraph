@@ -1,5 +1,4 @@
 export * as pothos from '@pothos/core';
-export * from 'brandi';
 export * from '@pothos/plugin-dataloader';
 
 export {

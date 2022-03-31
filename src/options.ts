@@ -1,7 +1,6 @@
-import { Container } from 'brandi';
-import { ApplicationFactory } from './types';
+import { ApplicationFactory, ExtendedDefaultContext } from './types';
 
-export type Options<TContext> = {
+export type Options<TContext extends ExtendedDefaultContext<any>> = {
   /**
    * When True, GraphiQl and graphql-voyager will be rendered.
    * Set this True in development environments.
@@ -33,5 +32,5 @@ export type Options<TContext> = {
   /**
    * Registers dependency injections
    */
-  registerDependencies?: (container: Container) => void;
+  createRequestContext: () => TContext['Context'];
 };

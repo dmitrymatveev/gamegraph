@@ -1,6 +1,6 @@
 {
   "name": "@janderbot/gamegraph",
-  "version": "0.2.9-rc",
+  "version": "0.3.0-rc",
   "description": "Web framework for building real-time GRIP capable api application with GraphQL",
   "author": "janderbot <contact@janderbot.one>",
   "license": "MIT",
@@ -12,9 +12,10 @@
   ],
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "tsnd --respawn example/index.ts",
+    "example": "tsnd --respawn example/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build:clean && npm run build:compile",
+    "build:watch": "npm run build:clean && tsc -w --outDir ./dist --declarationDir ./types",
     "build:compile": "tsc --outDir ./dist --declarationDir ./types",
     "build:clean": "rimraf dist && rimraf types",
     "docker:gamegraph:build": "docker build . -t gamegraph",
@@ -36,7 +37,6 @@
     "@fanoutio/serve-grip": "^1.1.9",
     "@pothos/core": "^3.1.1",
     "@pothos/plugin-dataloader": "^3.3.1",
-    "brandi": "^4.0.1",
     "dataloader": "^2.0.0",
     "express": "^4.17.3",
     "graphql": "^16.2.0",

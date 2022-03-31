@@ -1,5 +1,4 @@
 import { ServeGrip } from '@fanoutio/serve-grip';
-import { Container } from 'brandi';
 import { RequestHandler } from 'express';
 import { GraphQLSchema } from 'graphql';
 import {
@@ -10,26 +9,19 @@ import {
   shouldRenderGraphiQL,
 } from 'graphql-helix';
 import { Options } from '../options';
+import { ExtendedDefaultContext } from '../types';
 
-export type GraphQlMiddlewareOptions<TContext> = Options<TContext> & {
+export type GraphQlMiddlewareOptions<TContext extends ExtendedDefaultContext<any>> = Options<TContext> & {
   serveGrip: ServeGrip;
   schema: GraphQLSchema;
 };
 
-const createDependencyInjectionContainer = <TContext>(
-  { registerDependencies }: GraphQlMiddlewareOptions<TContext>,
-  container: Container = new Container()
-) =>
-  (registerDependencies && registerDependencies(container) && container) ||
-  null;
-
-export const graphQlMiddleware: <TContext>(
+export const graphQlMiddleware: <TContext extends ExtendedDefaultContext<any>>(
   context: GraphQlMiddlewareOptions<TContext>
-) => RequestHandler = (context) => {
-  const rootContainer = createDependencyInjectionContainer(context);
-
+) => RequestHandler = (options) => {
+  
   return async (req, res) => {
-    const { serveGrip, schema, renderDocs } = context;
+    const { serveGrip, schema, renderDocs, createRequestContext } = options;
 
     // Run the middleware
     if (!(await serveGrip.run(req, res))) {
@@ -58,9 +50,7 @@ export const graphQlMiddleware: <TContext>(
       variables,
       request,
       schema,
-      contextFactory: () => ({
-        container: new Container().extend(rootContainer),
-      }),
+      contextFactory: createRequestContext,
     });
 
     sendResult(result, res);
