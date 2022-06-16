@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { IRequestGrip, IResponseGrip, ServeGrip } from '@fanoutio/serve-grip';
 import { Options } from './options';
 import { graphQlMiddleware } from './middleware/graphQlMiddleware';
@@ -32,6 +33,8 @@ export const start = <TContext extends ExtendedDefaultContext<any>>(options: Opt
     },
     gripProxyRequired: false,
   });
+
+  app.use(cors());
 
   app.use(express.json());
 

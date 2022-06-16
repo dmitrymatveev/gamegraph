@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.start = void 0;
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const serve_grip_1 = require("@fanoutio/serve-grip");
 const graphQlMiddleware_1 = require("./middleware/graphQlMiddleware");
 const modules_1 = require("./modules");
@@ -18,6 +19,7 @@ const start = (options) => {
         },
         gripProxyRequired: false,
     });
+    app.use((0, cors_1.default)());
     app.use(express_1.default.json());
     app.use(serveGrip);
     app.use('/', (0, graphQlMiddleware_1.graphQlMiddleware)(Object.assign({ schema, serveGrip }, options)));
